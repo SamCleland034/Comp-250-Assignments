@@ -1,5 +1,4 @@
 import java.lang.Math;
-
 /*********************************************************/
 /* NAME: Sam Cleland                                                 */
 /* STUDENT ID: 260675996                                          */
@@ -173,47 +172,26 @@ class LargeInteger {
 
     /* This function returns the product of this and other by iterative addition */
     public LargeInteger iterativeAddition(LargeInteger other) {
-    	long sumOfDigitsThis= 0;
-    	LargeInteger iterativeProduct= new LargeInteger("");
-    	for(int i=0; i<this.digits.length;i++){
-    		sumOfDigitsThis +=  (this.digits[this.digits.length-1-i]*Math.pow(10, i));  
+    	LargeInteger product= new LargeInteger("0");
+    	LargeInteger increment= new LargeInteger("1");
+    	LargeInteger count= new LargeInteger("0");
+    			//this function keeps on adding a "b" times and stops when boolVal equals other
+    	while (!count.equals(other)){
+    		
+    		product=product.add(this);
+    		count= count.add(increment);
+    		
+    	
     	
     	}
-    	for (int j=0; j<sumOfDigitsThis;j++){
-    		 iterativeProduct= iterativeProduct.add(other);
-    	}
-    	return iterativeProduct;
-    	/*//using type long because longer range 
-    	long sumOfDigits1 = 0;
-    	long sumOfDigits2 = 0;
-    	long product = 0;
-    	//calculates the value of the integer by definition of radix base 10
-    	//if number is 123, 1*10^2+2*10^1+3*10^0 for both a and b
-    	for( int i= 0; i<this.digits.length; i++){
-    		sumOfDigits1 +=  (this.digits[this.digits.length-1-i]*Math.pow(10, i));  
-    	}
-    	for( int i= 0; i<other.digits.length; i++){
-    		sumOfDigits2 +=  (other.digits[other.digits.length-1-i]*Math.pow(10,i));  
-    	}
+    	return product; 
     	
-    	//iteratively adds the value of b a times
-    	for( int i=0; i<sumOfDigits1; i++){
-    		product += sumOfDigits2;
-    	
-    	}
-    	//converts the integer back to a string via toString
-    	//String sproduct=Integer.toString(product);
-    	String longStringProduct= Long.toString(product);
-    	//need to create an instance of type LargeInteger to return because
-    	//method expects LargeInteger as return type
-    	LargeInteger productOfNum= new LargeInteger(longStringProduct);
-    	return productOfNum;*/
     	
     	}
 
     	
     	
-        /* YOU WRITE YOUR CODE HERE */
+        
        
      // end of iterativeAddition
 
@@ -221,59 +199,52 @@ class LargeInteger {
 
     /* This function returns the product of this and other by using the standard multiplication algorithm */
     public LargeInteger standardMultiplication(LargeInteger other) {
-    	/*int total= 0;
-    	for (int i=other.digits.length-1; i>0; i--){
-    		int carry= 0;
-    		int[] tmpAdd= other.digits[];
-    		for(int j = other.digits.length-1; j>0;j--){
-    			int singleDigitAns= this.digits[j]
-    		
-    		}
-    		
-    	}*/
-    	//chooses the smaller number to be the multipler and the bigger number the number divided,
+    	
+    	
     	//if the numbers are the same length then it will be performed as a*b
     	int biggerNumlength= Math.max(this.digits.length,other.digits.length);
     	int smallerNumlength= Math.min(this.digits.length,other.digits.length);
-    	int total = 0;
     	int product = 0;
+    	LargeInteger sProduct= new LargeInteger("");
+    	LargeInteger actualProduct= new LargeInteger("");
     	//starts the iteration through the ones column of the multiplier to the nth column(reads right to left)
     	for(int i=smallerNumlength-1 ; i>=0; i--){
     		int carry = 0;
-    		int sumOfDigits=0;
     		int[]tmpAdd = new int[biggerNumlength+1];
     		//another for loop for the number being multiplied (reads right to left as well)
     		for (int j = biggerNumlength-1; j>=0;j--){
     			//distinguishes which number is the largest by length
-    			//if it is the same length then read as a*b 
-    			if (this.digits.length>other.digits.length){
+    			//if both are the same length then executes the if statement 
+    			if (this.digits.length>=other.digits.length){
     				product= this.digits[j]*other.digits[i]+carry;
     				tmpAdd[j+1]=product%10; //remainder is put into the rightmost part of the array that hasn't been occupied
     				carry= product/10; //calculates carry that will be added to the product through the next iteration of the loop
     			}
-    			else if(this.digits.length<other.digits.length){
-    				product= this.digits[i]*other.digits[j]+carry;
-    				tmpAdd[j+1]=product%10; 
-    				carry= product/10;
-    			}
     			else{
-    				product= this.digits[j]*other.digits[i]+carry;
-    				tmpAdd[j+1]=product%10;
+    				product= this.digits[i]*other.digits[j]+carry;
+    				tmpAdd[(int)j+1]=product%10; 
     				carry= product/10;
-    				
     			}
+    	
     		
     		}
-    		tmpAdd[0]=carry; //the left most position gets whatever is left of carry ,since carry has to be put somewhere
-    		for( int x= 0; x<tmpAdd.length-1; x++){ //calculates the value of the array by definition of a base 10 number
-        		sumOfDigits +=  (tmpAdd[tmpAdd.length-1-x]*Math.pow(10, x)); 
+    		tmpAdd[0]= carry;//the left most position gets whatever is left of carry ,since carry has to be put somewhere
+    		/*turns integer array into a string to make a new LargeInteger
+    		that takes the new string stringProduct */
+    		StringBuilder build = new StringBuilder();
+    		for(int x = 0; x < tmpAdd.length; x++) {
+    		   build.append(tmpAdd[x]);
     		}
-    		total= (int) (total + sumOfDigits*Math.pow(10, smallerNumlength-i-1));  //keeps on adding the total of SumOfDigits and multiples the next SumOfDigits by 10^i depending on how far it is in the loop
+    		String stringProduct = build.toString();
+    		sProduct= new LargeInteger(stringProduct);
+    		sProduct= sProduct.removeLeadingZeros();
+    		sProduct= sProduct.shiftLeft(smallerNumlength-1-i);
+    		actualProduct= actualProduct.add(sProduct);
+    		//shiftLeft used to assign correct power of 10 to the digit
+    		//the first digit gets the power (smallerNumlength-1-(smallerNumlength-1) or 10^0
+    		
     		} 																		
-    	String StringStandardMult= Integer.toString(total); //converted to string for creation of new large int							
-    	LargeInteger StandardMult= new LargeInteger(StringStandardMult); //converts it to the correct return type
-        /* YOU WRITE YOUR CODE HERE */
-        return StandardMult; // Remove this from your code.
+    	return actualProduct; 
     } // end of standardMultiplication
                 
 
@@ -325,8 +296,37 @@ class LargeInteger {
     /* This method returns the product of this and other by using the faster recursive approach 
        described in the homework. It only uses the built-in "*" operator to multiply single-digit numbers */
     public LargeInteger recursiveFastMultiplication(LargeInteger other) {
-        /* YOU WRITE YOUR CODE HERE */
-        return null; // Remove this from your code.
+    	 LargeInteger leftThis, rightThis, leftOther, rightOther;
+         LargeInteger term1,  term2,  term3,termTmp1,termTmp2,termTmp3, sum; // temporary terms 
+         int k = digits.length;
+         int n = other.digits.length;
+         //if ( n<k ) then return recursiveFastMultiplication( b, a );
+         //if ( k=1 ) then return standardMultiplication( a, b );
+         //follows the fast recursive algorithm, using 3 multiplications instead of 4
+         if(n<k)return other.recursiveFastMultiplication(this);
+         if(k==1)return this.standardMultiplication(other);
+         leftThis = new LargeInteger( digits, 0, k - k/2 );
+         rightThis = new LargeInteger( digits, k - k/2, k );
+         leftOther = new LargeInteger( other.digits, 0, n - n/2 );
+         rightOther = new LargeInteger( other.digits, n - n/2, n );
+         term1= rightThis.recursiveFastMultiplication (rightOther);
+         term2= leftThis.recursiveFastMultiplication(leftOther);
+         termTmp1=leftThis.add(rightThis);
+         termTmp2= leftOther.shiftLeft(n/2-k/2);
+         termTmp2= termTmp2.add(rightOther);
+         term3= termTmp1.recursiveFastMultiplication(termTmp2);
+         termTmp3= term2.shiftLeft(n/2-k/2);
+         termTmp3= termTmp3.add(term1);
+         term3= term3.subtract(termTmp3);
+         term2= term2.shiftLeft(k/2+n/2);
+         term3= term3.shiftLeft(k/2);
+         sum=term1.add(term3);
+         sum=sum.add(term2);
+         return sum;
+         
+       
+     
+     
     }
 
 
@@ -345,15 +345,35 @@ public class TestLargeInteger {
     public static void main( String args[] ) {
         /* TEST YOUR METHODS BY ADDING CODE HERE */
         /* THIS CODE IS NOT GOING TO BE GRADED. IT'S JUST FOR YOU TO TEST YOUR PROGRAM */
-
+    	
         /* For example */
-        LargeInteger a = new LargeInteger("5000000000000000123901294801209841");
-        LargeInteger b = new LargeInteger( "12122390223232" );
-        System.out.println(a + " + " + b + " = " + a.add( b ) );
-        System.out.println(b + " - " + a + " = " + b.subtract( a ) );
-        System.out.println(b + " * " + a + " = " + b.recursiveMultiplication( a ) );
-        System.out.println(b + " * " + a  + "(iteratively) = "  + b.iterativeAddition(a));
-        System.out.println(b + " * " + a + " (Standard Multiplication) = "+ b.standardMultiplication(a));
+    	long startTime = System.nanoTime();
+		for(int x= 0 ; x<1000; x++){
+		LargeInteger num1 = LargeInteger.getRandom(8);
+		LargeInteger num2 = LargeInteger.getRandom(8);
+		num1.iterativeAddition(num2);
+		//num1.standardMultiplication(num2);
+		//num1.recursiveMultiplication(num2);
+		//num1.recursiveFastMultiplication(num2);
+		
+}
+		long endTime = System.nanoTime();
+		long duration = endTime-startTime;
+		duration= duration/1000;
+		//LargeInteger a= new LargeInteger("0");
+		//LargeInteger b= new LargeInteger ("0");
+	
+    	
+        //System.out.println(a + " + " + b + " = " + a.add( b ) );
+        //System.out.println(b + " - " + a + " = " + b.subtract( a ) );
+        //System.out.println(b + " * " + a + " = " + b.recursiveMultiplication( a ) );
+        //System.out.println(b + " * " + a + " = " + b.recursiveFastMultiplication(a));
+        //System.out.println(b + " * " + a  + " (iteratively) = "  + b.iterativeAddition(a));
+        //System.out.println(b + " * " + a + " (Standard Multiplication) = "+ b.standardMultiplication(a));
+        
+       
+        
+        System.out.println(duration + " Nanoseconds");
         
     }
 }
